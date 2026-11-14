@@ -556,7 +556,7 @@ private fun SessionTimer(endTimeMillis: Long) {
         else -> Color(0xFF2E7D50)
     }
     Column(horizontalAlignment = Alignment.End) {
-        Text(if (overtime) "OVERTIME" else "TIME LEFT", fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp, color = timerColor)
+        Text(if (overtime) "Overtime" else "Time left", fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp, color = timerColor)
         Text(
             if (overtime) "+${formatDuration(-remaining)}" else formatDuration(remaining),
             fontSize = 22.sp,
