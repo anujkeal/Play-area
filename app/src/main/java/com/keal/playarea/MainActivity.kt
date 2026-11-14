@@ -209,7 +209,7 @@ private fun PlayAreaScreen(
                 containerColor = HamleysRed,
                 contentColor = Color.White,
                 shape = CircleShape
-            ) {
+            ) {} {
                 Icon(Icons.Default.Add, contentDescription = "Add child", modifier = Modifier.size(28.dp))
             }
         }
