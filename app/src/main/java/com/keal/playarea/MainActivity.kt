@@ -59,7 +59,7 @@ class MainActivity:ComponentActivity(){
   Spacer(Modifier.height(12.dp));Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color(0xFFEFE4D7)).padding(4.dp)){listOf(false,true).forEach{v->Box(Modifier.weight(1f).height(44.dp).clip(RoundedCornerShape(10.dp)).background(if(tab==v)Color.White else Color.Transparent).clickable{tab=v},Alignment.Center){Text(if(v)"Previous (${previous.size})" else "Active (${active.size})",color=if(tab==v)Red else Muted,fontWeight=FontWeight.Bold)}}}
   val list=if(tab)previous else active;val filtered=list.filter{it.name.contains(query,true)||it.colorName.contains(query,true)}
   if(filtered.isEmpty()){Column(Modifier.fillMaxWidth().padding(top=65.dp),horizontalAlignment=Alignment.CenterHorizontally){Text("✦",fontSize=42.sp,color=Gold);Text(if(tab)"No previous sessions yet" else if(query.isBlank())"Ready for some fun?" else "No matching sessions",fontFamily=FontFamily.Serif,fontSize=21.sp,fontWeight=FontWeight.Bold);Text(if(tab)"Completed sessions appear here." else "Tap + when a child is ready to play.",color=Muted,fontSize=13.sp)}}
-  else LazyColumn(verticalArrangement=Arrangement.spacedBy(11.dp),contentPadding=PaddingValues(top=12.dp,bottom=90.dp)){items(filtered,key{it.id}){s->if(tab) PreviousCard(s) else ActiveCard(s,now){end(s.id)}}}
+  else LazyColumn(verticalArrangement=Arrangement.spacedBy(11.dp),contentPadding=PaddingValues(top=12.dp,bottom=90.dp)){items(filtered, key = { it.id }){s->if(tab) PreviousCard(s) else ActiveCard(s,now){end(s.id)}}}
  }
  }
  if(sheet) AddSheet({sheet=false}){name,color,pattern->val t=System.currentTimeMillis();start(PlaySession(t,name.trim(),color.name,color.hex,pattern,t,t+1_800_000L));data=SessionStore.all(ctx);sheet=false}
