@@ -1,0 +1,1 @@
+<resources><string name="app_name">Play Area</string><string name="notification_channel_name">Play session alerts</string><string name="notification_channel_description">Alerts when a play session reaches 30 minutes.</string></resources>
