@@ -26,7 +26,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Package full source
-        run: tar -czf PlayArea-source.tar.gz --exclude=.git --exclude=.gradle --exclude='*/build' .
+        run: tar -czf /tmp/PlayArea-source.tar.gz --exclude=.git --exclude=.gradle --exclude=app/build . && cp /tmp/PlayArea-source.tar.gz PlayArea-source.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: PlayArea-source
