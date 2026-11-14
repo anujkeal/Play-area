@@ -35,8 +35,8 @@ interface SessionDao {
     @Query("DELETE FROM play_sessions WHERE id = :id")
     suspend fun hardDelete(id: Long)
 
-    @Query("DELETE FROM play_sessions WHERE status = 'DELETED_PENDING'")
-    suspend fun clearPendingDeletes()
+    @Query("SELECT * FROM play_sessions WHERE status = 'DELETED_PENDING' ORDER BY pendingDeleteAt ASC")
+    suspend fun getPendingDeletes(): List<PlaySession>
 }
 
 /*
@@ -58,7 +58,13 @@ private val MIGRATION_1_2 = object : Migration(1, 2) {
     }
 }
 
-@Database(entities = [PlaySession::class], version = 2, exportSchema = false)
+private val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE play_sessions ADD COLUMN pendingDeleteAt INTEGER DEFAULT NULL")
+    }
+}
+
+@Database(entities = [PlaySession::class], version = 3, exportSchema = false)
 abstract class SessionDatabase : RoomDatabase() {
     abstract fun sessionDao(): SessionDao
 
@@ -70,7 +76,7 @@ abstract class SessionDatabase : RoomDatabase() {
                 context.applicationContext,
                 SessionDatabase::class.java,
                 "play_area_sessions.db"
-            ).addMigrations(MIGRATION_1_2).build().also { instance = it }
+            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { instance = it }
         }
     }
 }

@@ -22,7 +22,7 @@ class SessionAlarmReceiver : BroadcastReceiver() {
         val pendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                SessionStore.initialize(context, clearPendingDeletes = false)
+                SessionStore.initialize(context)
                 val session = SessionStore.getById(context, id) ?: return@launch
                 if (session.status != SessionStatus.ACTIVE) return@launch
                 ensureChannel(context)

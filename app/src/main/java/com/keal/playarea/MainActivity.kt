@@ -184,6 +184,23 @@ private fun PlayAreaScreen() {
         SessionStore.initialize(context)
         refresh()
         sessions.filter { it.status == SessionStatus.ACTIVE }.forEach { SessionAlarmReceiver.schedule(context, it) }
+
+        // Restore any delete Undo window that was interrupted by process death.
+        SessionStore.pendingDeletes(context).forEach { pending ->
+            val deletedAt = pending.pendingDeleteAt ?: System.currentTimeMillis()
+            val remaining = (6_000L - (System.currentTimeMillis() - deletedAt)).coerceAtLeast(0L)
+            if (remaining == 0L) {
+                SessionStore.hardDelete(context, pending.id)
+            } else {
+                val result = showUndoSnackbar(snackbarHostState, "Session deleted", remaining)
+                if (result == SnackbarResult.ActionPerformed) {
+                    SessionStore.update(context, pending.copy(status = SessionStatus.ENDED, pendingDeleteAt = null))
+                } else {
+                    SessionStore.hardDelete(context, pending.id)
+                }
+            }
+            refresh()
+        }
     }
 
     val active = remember(sessions) {
@@ -226,7 +243,7 @@ private fun PlayAreaScreen() {
 
     fun deleteSession(session: PlaySession) {
         scope.launch {
-            SessionStore.update(context, session.copy(status = SessionStatus.DELETED_PENDING))
+            SessionStore.update(context, session.copy(status = SessionStatus.DELETED_PENDING, pendingDeleteAt = System.currentTimeMillis()))
             SessionAlarmReceiver.cancel(context, session.id)
             refresh()
             if (showUndoSnackbar(snackbarHostState, "Session deleted") == SnackbarResult.ActionPerformed) {
@@ -467,7 +484,11 @@ private fun PlayAreaScreen() {
     }
 }
 
-private suspend fun showUndoSnackbar(host: SnackbarHostState, message: String): SnackbarResult = coroutineScope {
+private suspend fun showUndoSnackbar(
+    host: SnackbarHostState,
+    message: String,
+    durationMillis: Long = 6_000L
+): SnackbarResult = coroutineScope {
     val result = async {
         host.showSnackbar(
             message = message,
@@ -477,7 +498,7 @@ private suspend fun showUndoSnackbar(host: SnackbarHostState, message: String): 
         )
     }
     while (host.currentSnackbarData?.visuals?.message != message) delay(20)
-    val deadline = System.currentTimeMillis() + 6_000L
+    val deadline = System.currentTimeMillis() + durationMillis
     while (System.currentTimeMillis() < deadline) {
         if (result.isCompleted && result.await() == SnackbarResult.ActionPerformed) {
             return@coroutineScope SnackbarResult.ActionPerformed

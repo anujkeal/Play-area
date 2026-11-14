@@ -11,7 +11,7 @@ object SessionStore {
     private const val MIGRATION_PREFS = "play_area_room_import"
     private const val MIGRATION_KEY = "legacy_imported"
 
-    suspend fun initialize(context: Context, clearPendingDeletes: Boolean = true) = withContext(Dispatchers.IO) {
+    suspend fun initialize(context: Context) = withContext(Dispatchers.IO) {
         val dao = SessionDatabase.get(context).sessionDao()
         val marker = context.getSharedPreferences(MIGRATION_PREFS, Context.MODE_PRIVATE)
         if (!marker.getBoolean(MIGRATION_KEY, false)) {
@@ -45,11 +45,14 @@ object SessionStore {
             if (legacy.isNotEmpty()) dao.insertAll(legacy)
             marker.edit().putBoolean(MIGRATION_KEY, true).commit()
         }
-        if (clearPendingDeletes) dao.clearPendingDeletes()
     }
 
     suspend fun all(context: Context): List<PlaySession> = withContext(Dispatchers.IO) {
         SessionDatabase.get(context).sessionDao().getAll()
+    }
+
+    suspend fun pendingDeletes(context: Context): List<PlaySession> = withContext(Dispatchers.IO) {
+        SessionDatabase.get(context).sessionDao().getPendingDeletes()
     }
 
     suspend fun getById(context: Context, id: Long): PlaySession? = withContext(Dispatchers.IO) {

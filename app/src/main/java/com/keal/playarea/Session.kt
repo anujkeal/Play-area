@@ -17,7 +17,8 @@ data class PlaySession(
     @ColumnInfo(defaultValue = "'ENDED'") val status: String = SessionStatus.ACTIVE,
     @ColumnInfo(defaultValue = "0") val playedMillis: Long = 0L,
     @ColumnInfo(defaultValue = "0") val resumeCount: Int = 0,
-    @ColumnInfo(defaultValue = "0") val lastStartedAt: Long = startedAt
+    @ColumnInfo(defaultValue = "0") val lastStartedAt: Long = startedAt,
+    @ColumnInfo(defaultValue = "NULL") val pendingDeleteAt: Long? = null
 )
 
 object SessionStatus {
