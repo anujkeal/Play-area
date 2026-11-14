@@ -209,7 +209,7 @@ private fun PlayAreaScreen(
                 containerColor = HamleysRed,
                 contentColor = Color.White,
                 shape = CircleShape
-            ) {} {
+            ) {
                 Icon(Icons.Default.Add, contentDescription = "Add child", modifier = Modifier.size(28.dp))
             }
         }
@@ -460,7 +460,7 @@ private fun AddChildSheet(
                 modifier = Modifier.padding(vertical = 10.dp).size(width = 42.dp, height = 4.dp),
                 color = Color(0xFFD7C8B8),
                 shape = CircleShape
-            )
+            ) {}
         }
     ) {
         Column(Modifier.fillMaxSize()) {
