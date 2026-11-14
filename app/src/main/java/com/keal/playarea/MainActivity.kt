@@ -315,7 +315,7 @@ private fun PlayAreaScreen() {
             Spacer(Modifier.height(22.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("PLAY AREA", color = HamleysRed, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+                    Text("Play area", color = HamleysRed, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
                     Text(
                         "Little moments,\nbig adventures.",
                         fontFamily = FontFamily.Serif,
@@ -328,7 +328,7 @@ private fun PlayAreaScreen() {
                 Surface(color = Color.White, shape = RoundedCornerShape(18.dp), border = BorderStroke(1.dp, Color(0xFFEDE1D3))) {
                     Column(Modifier.padding(horizontal = 17.dp, vertical = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("${active.size}", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = HamleysRed)
-                        Text("ACTIVE", fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp, color = Muted)
+                        Text("Active", fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp, color = Muted)
                     }
                 }
             }
@@ -750,7 +750,7 @@ private fun AddChildSheet(onDismiss: () -> Unit, onStart: (String, ShirtColor, S
                         rowColors.forEach { swatch ->
                             val chosen = selectedColorHex.equals(swatch.hex, ignoreCase = true)
                             Surface(
-                                modifier = Modifier.weight(1f).height(44.dp).clickable {
+                                modifier = Modifier.weight(1f).height(48.dp).clickable {
                                     dismissKeyboard()
                                     selectedColorName = swatch.name
                                     selectedColorHex = swatch.hex
