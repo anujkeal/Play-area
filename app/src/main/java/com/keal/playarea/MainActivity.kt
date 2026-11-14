@@ -176,7 +176,7 @@ private fun PlayAreaScreen(
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    var sessions by remember { mutableStateOf(SessionStore.getAll(context)) }
+    var sessions by remember { mutableStateOf(SessionStore.all(context)) }
     var query by rememberSaveable { mutableStateOf("") }
     var selectedTab by rememberSaveable { mutableStateOf("Active") }
     var showSheet by rememberSaveable { mutableStateOf(false) }
@@ -192,10 +192,10 @@ private fun PlayAreaScreen(
         sessions.filter { it.finishedAt != null }.sortedByDescending { it.finishedAt ?: 0L }
     }
     val visibleActive = remember(active, query) {
-        active.filter { it.childName.contains(query, true) || it.colorName.contains(query, true) }
+        active.filter { it.name.contains(query, true) || it.colorName.contains(query, true) }
     }
     val visiblePrevious = remember(previous, query) {
-        previous.filter { it.childName.contains(query, true) || it.colorName.contains(query, true) }
+        previous.filter { it.name.contains(query, true) || it.colorName.contains(query, true) }
     }
 
     Scaffold(
@@ -283,7 +283,7 @@ private fun PlayAreaScreen(
                 } else {
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxSize()) {
                         items(visibleActive, key = { it.id }) { session ->
-                            ActiveSessionCard(session) { onEndSession(session.id); sessions = SessionStore.getAll(context) }
+                            ActiveSessionCard(session) { onEndSession(session.id); sessions = SessionStore.all(context) }
                         }
                         item(key = "active-bottom-space") { Spacer(Modifier.height(84.dp)) }
                     }
@@ -308,7 +308,7 @@ private fun PlayAreaScreen(
                 val start = System.currentTimeMillis()
                 val session = PlaySession(
                     id = start,
-                    childName = name.trim(),
+                    name = name.trim(),
                     colorName = color.name,
                     colorHex = color.hex,
                     pattern = pattern,
@@ -316,7 +316,7 @@ private fun PlayAreaScreen(
                     endsAt = start + 30 * 60 * 1000L
                 )
                 onStartSession(session)
-                sessions = SessionStore.getAll(context)
+                sessions = SessionStore.all(context)
                 showSheet = false
             }
         )
@@ -336,7 +336,7 @@ private fun ActiveSessionCard(session: PlaySession, onEnd: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(48.dp).clip(CircleShape).background(parseColor(session.colorHex)), contentAlignment = Alignment.Center) {
                     Text(
-                        session.childName.firstOrNull()?.uppercase() ?: "?",
+                        session.name.firstOrNull()?.uppercase() ?: "?",
                         color = if (session.colorHex.equals("#FFFFFF", true) || session.colorHex.equals("#FFEB3B", true)) Ink else Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
@@ -344,7 +344,7 @@ private fun ActiveSessionCard(session: PlaySession, onEnd: () -> Unit) {
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(session.childName, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Ink)
+                    Text(session.name, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Ink)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.size(8.dp).clip(CircleShape).background(parseColor(session.colorHex)))
                         Spacer(Modifier.width(5.dp))
@@ -413,7 +413,7 @@ private fun PreviousSessionCard(session: PlaySession) {
             Box(Modifier.size(12.dp).clip(CircleShape).background(parseColor(session.colorHex)))
             Spacer(Modifier.width(11.dp))
             Column(Modifier.weight(1f)) {
-                Text(session.childName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(session.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text("${session.colorName}  •  ${formatDate(session.startedAt)}", color = Muted, fontSize = 12.sp)
                 Text("${formatClock(session.startedAt)} – ${formatClock(end)}", color = Muted, fontSize = 12.sp)
             }
@@ -439,7 +439,8 @@ private fun AddChildSheet(
     val selectedColor = if (selectedColorHex.isBlank()) null else ShirtColor(selectedColorName, selectedColorHex)
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val screenHeightAtOpen = remember { LocalConfiguration.current.screenHeightDp.dp }
+    val configuration = LocalConfiguration.current
+    val screenHeightAtOpen = remember(configuration.screenHeightDp) { configuration.screenHeightDp.dp }
     val sheetHeight = screenHeightAtOpen * 0.92f
     val scrollState = rememberScrollState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -456,7 +457,7 @@ private fun AddChildSheet(
         containerColor = Cream,
         dragHandle = {
             Surface(
-                Modifier.padding(vertical = 10.dp).size(width = 42.dp, height = 4.dp),
+                modifier = Modifier.padding(vertical = 10.dp).size(width = 42.dp, height = 4.dp),
                 color = Color(0xFFD7C8B8),
                 shape = CircleShape
             )
