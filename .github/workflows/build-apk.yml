@@ -25,3 +25,11 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+      - name: Package full source
+        run: tar -czf PlayArea-source.tar.gz --exclude=.git --exclude=.gradle --exclude='*/build' .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PlayArea-source
+          path: PlayArea-source.tar.gz
+          if-no-files-found: error
+          retention-days: 14
